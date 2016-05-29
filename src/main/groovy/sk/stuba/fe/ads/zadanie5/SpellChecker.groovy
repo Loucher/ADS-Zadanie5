@@ -1,9 +1,9 @@
 package sk.stuba.fe.ads.zadanie5
 
 import groovy.time.TimeCategory
+import groovyx.gpars.GParsExecutorsPool
 
 class SpellChecker {
-    private static boolean VERBOSE = false
     BkTree tree
 
     SpellChecker(String dictionary) {
@@ -11,7 +11,7 @@ class SpellChecker {
         def start = new Date()
         println "Creating dictionary..."
         int wordCount = 0;
-        def lines = this.getClass().getResource(dictionary).eachLine {
+        this.getClass().getResource(dictionary).eachLine {
             tree.add(it)
             wordCount++
         }
@@ -25,21 +25,23 @@ class SpellChecker {
         int corrected = 0;
         println "Spellchecking fileName $fileName ..."
         String[] words = this.getClass().getResource(fileName).text.split(' ')
-        words.eachWithIndex { String word, int index ->
-            BkTree.WordMatch match = tree.findBest(word.toLowerCase())
-            if (!match) {
-                correct++
-            } else if (match.distance == 0) {
-                notFound++
-            } else {
-                corrected++
-                String newWord;
-                if (Character.isUpperCase(word.charAt(0))) {
-                    newWord = match.word.capitalize()
+        GParsExecutorsPool.withPool {
+            words.eachWithIndexParallel { String word, int index ->
+                BkTree.WordMatch match = tree.findBest(word.toLowerCase())
+                if (!match) {
+                    notFound++
+                } else if (match.distance == 0) {
+                    correct++
                 } else {
-                    newWord = match.word
+                    corrected++
+                    String newWord;
+                    if (Character.isUpperCase(word.charAt(0))) {
+                        newWord = match.word.capitalize()
+                    } else {
+                        newWord = match.word
+                    }
+                    words[index] = newWord
                 }
-                words[index] = newWord
             }
         }
         println "Spellcheck finished in ${TimeCategory.minus(new Date(), start)}"
