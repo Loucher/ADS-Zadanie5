@@ -27,7 +27,14 @@ class SpellChecker {
         String[] words = this.getClass().getResource(fileName).text.split(' ')
         GParsExecutorsPool.withPool {
             words.eachWithIndexParallel { String word, int index ->
-                BkTree.WordMatch match = tree.findBest(word.toLowerCase())
+                String searching = null;
+                if (Character.isUpperCase(word.charAt(0))) {
+                    searching = word.substring(0, 1).toLowerCase() + word.substring(1);
+                } else {
+                    searching = word
+                }
+
+                BkTree.WordMatch match = tree.findBest(searching)
                 if (!match) {
                     notFound++
                 } else if (match.distance == 0) {
