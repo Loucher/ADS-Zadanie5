@@ -1,7 +1,10 @@
 package sk.stuba.fe.ads.zadanie5
 
+import groovy.transform.CompileStatic
+
 import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance
 
+@CompileStatic
 class BkTree {
 
     BkNode root = null
@@ -38,7 +41,7 @@ class BkTree {
     }
 
     private static int optimalDistance(String word) {
-        return word.length() / 3
+        return (int)(word.length() / 3)
     }
 
     public Set<WordMatch> find(String search, int maxDistance) {

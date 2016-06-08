@@ -1,7 +1,9 @@
 package sk.stuba.fe.ads.zadanie5
 
 import groovy.time.TimeCategory
+import groovy.transform.CompileStatic
 import groovyx.gpars.GParsExecutorsPool
+
 
 class SpellChecker {
     BkTree tree
@@ -27,13 +29,12 @@ class SpellChecker {
         String[] words = this.getClass().getResource(fileName).text.split(' ')
         GParsExecutorsPool.withPool {
             words.eachWithIndexParallel { String word, int index ->
-                String searching = null;
+                String searching;
                 if (Character.isUpperCase(word.charAt(0))) {
                     searching = word.substring(0, 1).toLowerCase() + word.substring(1);
                 } else {
                     searching = word
                 }
-
                 BkTree.WordMatch match = tree.findBest(searching)
                 if (!match) {
                     notFound++
@@ -83,7 +84,7 @@ class SpellChecker {
     }
 
     private static int getPercent(int count, int totalCount) {
-        Math.round(count / totalCount * 100) as int
+        return Math.round((float)count / totalCount * 100) as int
     }
 
 }

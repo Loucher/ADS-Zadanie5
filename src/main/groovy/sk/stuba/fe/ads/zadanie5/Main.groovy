@@ -29,6 +29,9 @@ Hodnotia sa len zadania odovzdané do AIS!!!
 */
 package sk.stuba.fe.ads.zadanie5
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class Main {
     static void main(String... args) {
         SpellChecker sc = new SpellChecker("/slovnik.txt")
